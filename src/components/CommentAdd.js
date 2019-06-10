@@ -9,15 +9,26 @@ import {
 } from 'react-native';
 import { Gravatar } from 'react-native-gravatar';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { connect } from 'react-redux';
 
-export default class CommentAdd extends Component {
+import { addComment } from '../store/actions/postAction';
+
+class CommentAdd extends Component {
     state = {
-        comment: 'Arromado',
+        comment: '',
         editMode: false
     };
 
     handleAdd = () => {
-        Alert.alert('Adicionado', this.state.comment);
+        this.props.onAddComment({
+            postId: this.props.postId,
+            comment: {
+                nickname: this.props.nome,
+                comment: this.state.comment
+            }
+        });
+
+        this.setState({ comment: '', editMode: false });
     }
 
     render() {
@@ -75,3 +86,18 @@ const styles = StyleSheet.create({
         width: '90%'
     }
 });
+
+
+const mapStateToProps = ({ user }) => {
+    return {
+        nome: user.nome
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onAddComment: payload => dispatch(addComment(payload))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(CommentAdd);

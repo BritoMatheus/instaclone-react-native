@@ -12,14 +12,24 @@ import {
     Alert
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
+import { connect } from 'react-redux';
 
-export default class PhotoAdd extends Component {
+import { addPost } from '../store/actions/postAction';
+
+const noUser = 'Você precisar estar logado para subir fotos!';
+
+class PhotoAdd extends Component {
     state = {
         image: null,
         comment: ''
     };
 
     pickImage = () => {
+        if (!this.props.nome) {
+            Alert.alert('Atenção', noUser);
+            return;
+        }
+
         ImagePicker.showImagePicker({
             title: 'Escolha a imagem',
             maxHeight: 600,
@@ -32,7 +42,23 @@ export default class PhotoAdd extends Component {
     }
 
     save = async () => {
-        Alert.alert('Imagem adiciona!', this.state.comment);
+        if (!this.props.nome) {
+            Alert.alert('Atenção', noUser);
+            return;
+        }
+
+        this.props.onAddPost({
+            id: Math.random(),
+            nickname: this.props.nome,
+            email: this.props.email,
+            image: this.state.image,
+            comments: [{
+                nickname: this.props.name,
+                comment: this.state.comment
+            }]
+        });
+        this.setState({ image: null, comment: '' });
+        this.props.navigation.navigate('Feed');
     }
 
     render() {
@@ -48,7 +74,8 @@ export default class PhotoAdd extends Component {
                     </TO>
                     <TextInput placeholder='Algum comentário'
                         style={styles.input} value={this.state.comment}
-                        onChangeText={comment => this.setState({ comment })}></TextInput>
+                        onChangeText={comment => this.setState({ comment })}
+                        editable={this.props.nome != null}></TextInput>
                     <TO onPress={this.save} style={styles.buttom}>
                         <Text style={styles.buttomText}>Salvar</Text>
                     </TO>
@@ -94,3 +121,18 @@ const styles = StyleSheet.create({
     }
 
 })
+
+const mapStateToProps = ({ user }) => {
+    return {
+        email: user.email,
+        nome: user.nome
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onAddPost: post => dispatch(addPost(post))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PhotoAdd);

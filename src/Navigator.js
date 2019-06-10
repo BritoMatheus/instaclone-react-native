@@ -1,7 +1,8 @@
 import React from 'react'
 import {
     createBottomTabNavigator,
-    createSwitchNavigator
+    createSwitchNavigator,
+    createStackNavigator
 } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -9,12 +10,21 @@ import Feed from './pages/Feed';
 import PhotoAdd from './pages/PhotoAdd';
 import Profile from './pages/Profile';
 import Login from './pages/Login';
+import Register from './pages/Register';
+ 
+
+const authRouter = createStackNavigator({
+    Login: { screen: Login, navigationOptions: { title: 'Login' } },
+    Register: { screen: Register, navigationOptions: { title: 'Register' } }
+}, {
+        initialRouteName: 'Login'
+    });
 
 const loginOrProffileRouter = createSwitchNavigator({
     Profile: Profile,
-    Auth: Login
+    Auth: authRouter
 }, {
-        initialRouteName: 'Profile'
+        initialRouteName: 'Auth'
     })
 
 const MenuRoutes = {

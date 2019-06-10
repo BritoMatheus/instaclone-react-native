@@ -6,14 +6,19 @@ import {
     TouchableOpacity as TO,
     TextInput
 } from 'react-native';
+import { connect } from 'react-redux';
 
-export default class Login extends Component {
+import { login } from '../store/actions/user';
+
+class Login extends Component {
     state = {
+        nome: 'Matheus',
         email: '',
         senha: ''
     }
 
     login = () => {
+        this.props.onLogin({ ...this.state });
         this.props.navigation.navigate('Profile');
     }
 
@@ -28,15 +33,14 @@ export default class Login extends Component {
                     onChangeText={email => this.setState({ email })}></TextInput>
                 <TextInput placeholder='Senha'
                     style={styles.input}
-                    autoFocus={true}
-                    value={this.state.email}
+                    value={this.state.senha}
                     secureTextEntry={true}
                     onChangeText={senha => this.setState({ senha })}></TextInput>
                 <TO onPress={this.login}
                     style={styles.buttom}>
                     <Text style={styles.buttomText}>Entrar</Text>
                 </TO>
-                <TO onPress={() => { }}
+                <TO onPress={() => { this.props.navigation.navigate('Register') }}
                     style={styles.buttom}>
                     <Text style={styles.buttomText}>Ainda não sou registrado</Text>
                 </TO>
@@ -70,3 +74,12 @@ const styles = StyleSheet.create({
         borderColor: '#333',
     }
 })
+
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onLogin: user => dispatch(login(user))
+    }
+}
+
+export default connect(null, mapDispatchToProps)(Login);
